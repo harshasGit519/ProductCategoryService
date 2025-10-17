@@ -48,9 +48,11 @@ public class ProductController {
         return productDtos;
     }
 
-    @PostMapping("/products")
+    @PostMapping("/createProduct")
     ProductDto addProduct(@RequestBody ProductDto input) {
-        return input;
+        Product product = from(input);
+        Product responsePproduct = iProductService.createProduct(product);
+        return from(responsePproduct);
     }
 
 
