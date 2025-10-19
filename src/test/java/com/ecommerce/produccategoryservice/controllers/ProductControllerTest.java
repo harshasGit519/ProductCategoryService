@@ -4,13 +4,15 @@ import com.ecommerce.produccategoryservice.dtos.ProductDto;
 import com.ecommerce.produccategoryservice.models.Product;
 import com.ecommerce.produccategoryservice.services.IProductService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ProductControllerTest {
@@ -20,6 +22,9 @@ class ProductControllerTest {
 
     @MockitoBean
     IProductService iProductService;
+
+    @Captor
+    private ArgumentCaptor<Long> idCaptor;
 
     @Test
     public void testProductById() {
@@ -40,6 +45,8 @@ class ProductControllerTest {
         assertEquals(id, responseEntity.getBody().getId());
         assertEquals(responseEntity.getBody().getPrice(), product.getPrice());
         assertEquals(responseEntity.getBody().getName(), product.getName());
+
+        verify(iProductService, times(1)).getProductById(id);
     }
 
     @Test
@@ -61,6 +68,24 @@ class ProductControllerTest {
         Exception ex = assertThrows(RuntimeException.class, () ->
                 productController.getProductById(productId));
         assertEquals("something wrong",ex.getMessage());
+    }
+
+    @Test
+    public void testProductByIdWhereProductServiceCallWithSameArgs(){
+        Long id = 2L;
+        Product product = new Product();
+        product.setId(id);
+        product.setPrice(1000.0);
+        product.setName("Pro1");
+        when(iProductService.getProductById(id)).thenReturn(product);
+
+        productController.getProductById(id);
+
+        verify(iProductService).getProductById(idCaptor.capture());
+
+        assertEquals(id,idCaptor.getValue());
+
+
     }
 
 }

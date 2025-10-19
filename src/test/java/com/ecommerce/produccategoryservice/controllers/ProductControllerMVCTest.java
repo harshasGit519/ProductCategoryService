@@ -3,8 +3,10 @@ package com.ecommerce.produccategoryservice.controllers;
 import com.ecommerce.produccategoryservice.dtos.ProductDto;
 import com.ecommerce.produccategoryservice.models.Product;
 import com.ecommerce.produccategoryservice.services.IProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -13,10 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
 public class ProductControllerMVCTest {
@@ -62,6 +65,33 @@ public class ProductControllerMVCTest {
 
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(body));
+                .andExpect(content().string(body))
+                .andExpect(jsonPath("$[0].name").value("pro1"))
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    public void addProductTest() throws Exception {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("pro1");
+        product.setPrice(100.0);
+        when(iProductService.createProduct(any(Product.class))).thenReturn(product);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+        productDto.setName("pro1");
+        productDto.setPrice(100.0);
+
+        String dtoString = objectMapper.writeValueAsString(productDto);
+
+        mockMvc.perform(post("/createProduct")
+                        .content(dtoString)
+                        .contentType(String.valueOf(MediaType.APPLICATION_JSON)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(dtoString))
+                .andExpect(jsonPath("$.name").value("pro1"));
+
     }
 }
