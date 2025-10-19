@@ -21,8 +21,10 @@ public class ProductController {
 
     @GetMapping("/products/{id}")
     ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
-        if (productId <= 0) {
-            throw new IllegalArgumentException("Passed ID was less than 1. Hence failed");
+        if (productId == 0) {
+            throw new IllegalArgumentException("Passed ID should be >0");
+        }else if(productId < 0) {
+            throw new IllegalArgumentException("Illegal id passed");
         }
         Product product = iProductService.getProductById(productId);
         if (product == null) {

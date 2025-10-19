@@ -17,7 +17,8 @@ class CalculatorTest {
     @Test
     void TestDivideByZero_ResultsArithmeticException() {
         Calculator calculator = new Calculator();
-        calculator.divide(1,0);
+
+        assertThrows(ArithmeticException.class, ()->calculator.divide(1,0));
 
     }
 }
