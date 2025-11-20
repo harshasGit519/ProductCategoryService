@@ -1,6 +1,8 @@
 package com.ecommerce.produccategoryservice.repos;
 
 import com.ecommerce.produccategoryservice.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,8 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findProductByPriceBetween(Double priceStart, Double priceEnd);
 
     List<Product> findProductByIsPrime(Boolean isPrime);
+
+    Page<Product> findByName(String name, PageRequest pageRequest);
 
     @Query("select p.description from Product p where p.id=:id")
     String findProductDescById(Long id);

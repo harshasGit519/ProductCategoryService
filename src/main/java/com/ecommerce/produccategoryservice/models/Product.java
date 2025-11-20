@@ -1,6 +1,7 @@
 package com.ecommerce.produccategoryservice.models;
 
 import com.ecommerce.produccategoryservice.dtos.ProductDto;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +20,7 @@ public class Product extends BaseModel {
     private Double price;
     private String imageUrl;
     // if new category, this cascade.All will create a new one
+    @JsonManagedReference
     @ManyToOne(cascade = CascadeType.ALL)
     private Category category;
 
